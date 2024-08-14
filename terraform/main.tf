@@ -1,23 +1,31 @@
 provider "aws" {
-  region = "us-east-1"
+  region = "us-east-1"  # Substitua pela região desejada
 }
 
-# Referencia o bucket existente
-data "aws_s3_bucket" "static_site" {
+# Cria o bucket S3
+resource "aws_s3_bucket" "static_site" {
   bucket = "meu-site-estatico-bucket"
+
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
+
+  # O ACL pode ser removido se for usado ObjectOwnership BucketOwnerEnforced
+  acl    = "public-read"
 }
 
-# Adiciona o arquivo index.html ao bucket existente
+# Adiciona o arquivo index.html ao bucket
 resource "aws_s3_bucket_object" "index" {
-  bucket = data.aws_s3_bucket.static_site.bucket
+  bucket = aws_s3_bucket.static_site.bucket
   key    = "index.html"
   source = "site/index.html"
   acl    = "public-read"
 }
 
-# Adiciona o arquivo error.html ao bucket existente
+# Adiciona o arquivo error.html ao bucket
 resource "aws_s3_bucket_object" "error" {
-  bucket = data.aws_s3_bucket.static_site.bucket
+  bucket = aws_s3_bucket.static_site.bucket
   key    = "error.html"
   source = "site/error.html"
   acl    = "public-read"
@@ -25,7 +33,7 @@ resource "aws_s3_bucket_object" "error" {
 
 # Adiciona uma política de bucket para permitir acesso público
 resource "aws_s3_bucket_policy" "static_site_policy" {
-  bucket = data.aws_s3_bucket.static_site.id
+  bucket = aws_s3_bucket.static_site.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -34,7 +42,7 @@ resource "aws_s3_bucket_policy" "static_site_policy" {
         Effect = "Allow"
         Principal = "*"
         Action = "s3:GetObject"
-        Resource = "${data.aws_s3_bucket.static_site.arn}/*"
+        Resource = "${aws_s3_bucket.static_site.arn}/*"
       },
     ]
   })
@@ -42,5 +50,5 @@ resource "aws_s3_bucket_policy" "static_site_policy" {
 
 # Exibe a URL do site
 output "website_url" {
-  value = data.aws_s3_bucket.static_site.website_endpoint
+  value = aws_s3_bucket.static_site.website_endpoint
 }
