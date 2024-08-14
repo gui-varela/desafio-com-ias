@@ -1,9 +1,13 @@
+provider "aws" {
+  region = "us-west-2"
+}
+
 # Referencia o bucket existente
 data "aws_s3_bucket" "static_site" {
   bucket = "meu-site-estatico-bucket"
 }
 
-# Adiciona um objeto ao bucket existente
+# Adiciona o arquivo index.html ao bucket existente
 resource "aws_s3_bucket_object" "index" {
   bucket = data.aws_s3_bucket.static_site.bucket
   key    = "index.html"
@@ -11,6 +15,7 @@ resource "aws_s3_bucket_object" "index" {
   acl    = "public-read"
 }
 
+# Adiciona o arquivo error.html ao bucket existente
 resource "aws_s3_bucket_object" "error" {
   bucket = data.aws_s3_bucket.static_site.bucket
   key    = "error.html"
@@ -18,7 +23,7 @@ resource "aws_s3_bucket_object" "error" {
   acl    = "public-read"
 }
 
-# Opcional: Adicione uma política ao bucket existente (caso necessário)
+# Adiciona uma política de bucket para permitir acesso público
 resource "aws_s3_bucket_policy" "static_site_policy" {
   bucket = data.aws_s3_bucket.static_site.id
 
@@ -33,4 +38,9 @@ resource "aws_s3_bucket_policy" "static_site_policy" {
       },
     ]
   })
+}
+
+# Exibe a URL do site
+output "website_url" {
+  value = data.aws_s3_bucket.static_site.website_endpoint
 }
