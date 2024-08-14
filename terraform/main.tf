@@ -4,7 +4,7 @@ provider "aws" {
 
 # Cria o bucket S3 com um nome único
 resource "aws_s3_bucket" "static_site" {
-  bucket = "meu-site-estatico-bucket-unique-2024"
+  bucket = "elogroup-site"
 
   website {
     index_document = "index.html"
