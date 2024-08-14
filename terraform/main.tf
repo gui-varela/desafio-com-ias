@@ -2,16 +2,14 @@ provider "aws" {
   region = "eu-west-1"  # Certifique-se de que esta seja a região correta
 }
 
-# Cria o bucket S3
+# Cria o bucket S3 com um nome único
 resource "aws_s3_bucket" "static_site" {
-  bucket = "meu-site-estatico-bucket"
+  bucket = "meu-site-estatico-bucket-unique-2024"
 
   website {
     index_document = "index.html"
     error_document = "error.html"
   }
-
-  # Remova a linha `acl = "public-read"`
 }
 
 # Adiciona o arquivo index.html ao bucket
@@ -19,7 +17,7 @@ resource "aws_s3_bucket_object" "index" {
   bucket = aws_s3_bucket.static_site.bucket
   key    = "index.html"
   source = "site/index.html"
-  acl    = "public-read"  # Esta linha ainda é necessária para o objeto
+  acl    = "public-read"
 }
 
 # Adiciona o arquivo error.html ao bucket
@@ -27,7 +25,7 @@ resource "aws_s3_bucket_object" "error" {
   bucket = aws_s3_bucket.static_site.bucket
   key    = "error.html"
   source = "site/error.html"
-  acl    = "public-read"  # Esta linha ainda é necessária para o objeto
+  acl    = "public-read"
 }
 
 # Adiciona uma política de bucket para permitir acesso público
