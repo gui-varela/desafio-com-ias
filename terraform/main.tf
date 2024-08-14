@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-west-1"  # Altere para 'eu-west-1' conforme a mensagem de erro
+  region = "eu-west-1"  # Certifique-se de que esta seja a região correta
 }
 
 # Cria o bucket S3
@@ -11,7 +11,7 @@ resource "aws_s3_bucket" "static_site" {
     error_document = "error.html"
   }
 
-  acl    = "public-read"
+  # Remova a linha `acl = "public-read"`
 }
 
 # Adiciona o arquivo index.html ao bucket
@@ -19,7 +19,7 @@ resource "aws_s3_bucket_object" "index" {
   bucket = aws_s3_bucket.static_site.bucket
   key    = "index.html"
   source = "site/index.html"
-  acl    = "public-read"
+  acl    = "public-read"  # Esta linha ainda é necessária para o objeto
 }
 
 # Adiciona o arquivo error.html ao bucket
@@ -27,7 +27,7 @@ resource "aws_s3_bucket_object" "error" {
   bucket = aws_s3_bucket.static_site.bucket
   key    = "error.html"
   source = "site/error.html"
-  acl    = "public-read"
+  acl    = "public-read"  # Esta linha ainda é necessária para o objeto
 }
 
 # Adiciona uma política de bucket para permitir acesso público
